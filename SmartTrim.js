@@ -3,11 +3,12 @@ var SmartTrim = (function(){
     var min = 80,
         max = 200,
         ideal = 100,
+        wiggle_room = 20,
         str = '',
         optional_delimiters = [',', ';', ':'];
 
     function close_to_ideal(fragment_length){
-        if( (fragment_length < ideal && (ideal - fragment_length < 20)) || (fragment_length > ideal && fragment_length - ideal < 20) ){
+        if( (fragment_length < ideal && (ideal - fragment_length < wiggle_room)) || (fragment_length > ideal && fragment_length - ideal < wiggle_room) ){
             return true;
         }
         return false;
@@ -52,18 +53,22 @@ var SmartTrim = (function(){
 
             if(options.ideal)
 		        ideal = options.ideal;
+            
+            if(options.wiggle_room)
+                wiggle_room = options.wiggle_room;
 
             if(options.optional_delimiters)
                 optional_delimiters = options.optional_delimiters;
 
-            var found = null,
-                whitespace_fragments = null;
+            var found = null;
 
+            //check for whole sentences first
             found = reduce_fragments(str, '.');
 	
             if( close_to_ideal(found.length) ){
                 return [found, str.substr(found.length)];
             }else{
+                //next, try delimiters
                 for(var x=0;x<optional_delimiters.length;x++){
                     var delimiter = optional_delimiters[x];
                     var re = new RegExp(delimiter);
@@ -78,12 +83,12 @@ var SmartTrim = (function(){
                 if( close_to_ideal(found.length) ){
                     return [found, str.substr(found.length)];
                 }else{
-                    whitespace_fragments = reduce_fragments(found, ' ');
+                    //if we can't trim on whole sentences or delimited fragments, try whitespace
+                    var whitespace_fragments = reduce_fragments(found, ' ');
+                    if(whitespace_fragments.length < max){
+                        return [whitespace_fragments, str.substr(whitespace_fragments.length)];
+                    }
                 }
-            }
-                
-            if(whitespace_fragments && whitespace_fragments.length < max){
-                return [whitespace_fragments, str.substr(whitespace_fragments.length)];
             }
 
             //failed to trim
