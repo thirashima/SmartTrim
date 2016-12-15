@@ -1,15 +1,16 @@
-//This function prefers looking for whole sentences first (most likely to be cogent). If whole sentances do not match our parameters,
+//This function prefers looking for whole sentences first (most likely to be coherent). If whole sentances do not match our parameters,
 //then it will try sentence fragments, delimited by commas. If that fails, it fall back to whole words, 
-//seperated by whitespace (least lilely to be cogent). 
+//seperated by whitespace (least lilely to be coherent). 
 var SmartTrim = (function(){
     "use strict";
     var min = 80,
         max = 200,
         ideal = 100,
-        str = '';
+        str = '',
+        optional_delimiters = [",",";",":"]
 
-    function close_to_ideal(pmatch_length){
-        if( (pmatch_length < ideal && (ideal - pmatch_length < 20)) || (pmatch_length > ideal && pmatch_length - ideal < 20) ){
+    function close_to_ideal(fragment_length){
+        if( (fragment_length < ideal && (ideal - fragment_length < 20)) || (fragment_length > ideal && fragment_length - ideal < 20) ){
             return true;
         }
         return false;
@@ -20,7 +21,7 @@ var SmartTrim = (function(){
             str_array = s.split(separator),
             possible_match = str_array[start],
             matched_length = possible_match.length,
-            out = "";
+            out = [];
 
         while(matched_length < min){
             start++;
@@ -33,34 +34,30 @@ var SmartTrim = (function(){
             }
         }
         for(var x=0;x<=start;x++){
-            out += str_array[x];
+            out.push(str_array[x]);
             if(x != str_array.length-1){
-            	out+=separator;
+            	out.push(separator);
             }
         }
-        return out;
+        return out.join("");
     }
 
     return {
-        init: function(options){
-            if(options.str)
-		        str = options.str;
+        trim: function(original_str, options){
+            options = options||{};
+            str = original_str;
+            
             if(options.min)
 		        min = options.min;
+
             if(options.max)
 		        max = options.max;
+
             if(options.ideal)
 		        ideal = options.ideal;
-        },
-        trim: function(){
-            
-            //not sure if we want to prefer the whole string, if it's below the max threshold.
-            if(str.length < max){
-                return [str, null];
-            }
 
             var found = null,
-                wsr = null;
+                whitespace_fragments = null;
 
             found = reduce_fragments(str, '.');
 	
@@ -73,18 +70,19 @@ var SmartTrim = (function(){
                     if(close_to_ideal(commasr.length)){
                         return [commasr, str.substr(commasr.length)];
                     }else{
-                        wsr = reduce_fragments(commasr, ' ');
+                        whitespace_fragments = reduce_fragments(commasr, ' ');
                     }
                 }else{
-                    wsr = reduce_fragments(found, ' ');
+                    whitespace_fragments = reduce_fragments(found, ' ');
                 }
             }
                 
-            if(wsr && wsr.length < max){
-                return [wsr, str.substr(wsr.length)];
+            if(whitespace_fragments && whitespace_fragments.length < max){
+                return [whitespace_fragments, str.substr(whitespace_fragments.length)];
             }
 
-            return [];
+            //failed to trim
+            return [null, str];
 
         }
     };
