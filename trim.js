@@ -1,13 +1,10 @@
-//This function prefers looking for whole sentences first (most likely to be coherent). If whole sentances do not match our parameters,
-//then it will try sentence fragments, delimited by commas. If that fails, it fall back to whole words, 
-//seperated by whitespace (least lilely to be coherent). 
 var SmartTrim = (function(){
     "use strict";
     var min = 80,
         max = 200,
         ideal = 100,
         str = '',
-        optional_delimiters = [",",";",":"]
+        optional_delimiters = [',', ';', ':'];
 
     function close_to_ideal(fragment_length){
         if( (fragment_length < ideal && (ideal - fragment_length < 20)) || (fragment_length > ideal && fragment_length - ideal < 20) ){
@@ -56,6 +53,9 @@ var SmartTrim = (function(){
             if(options.ideal)
 		        ideal = options.ideal;
 
+            if(options.optional_delimiters)
+                optional_delimiters = options.optional_delimiters;
+
             var found = null,
                 whitespace_fragments = null;
 
@@ -64,14 +64,19 @@ var SmartTrim = (function(){
             if( close_to_ideal(found.length) ){
                 return [found, str.substr(found.length)];
             }else{
-                if(/,/.test(found)){
-                    var commasr = reduce_fragments(found, ',');
-
-                    if(close_to_ideal(commasr.length)){
-                        return [commasr, str.substr(commasr.length)];
-                    }else{
-                        whitespace_fragments = reduce_fragments(commasr, ' ');
+                for(var x=0;x<optional_delimiters.length;x++){
+                    var delimiter = optional_delimiters[x];
+                    var re = new RegExp(delimiter);
+                    if(re.test(found)){
+                        var frags = reduce_fragments(found, delimiter);
+                        if(close_to_ideal(frags.length)){
+                            found = frags;
+                            break;
+                        }
                     }
+                }
+                if( close_to_ideal(found.length) ){
+                    return [found, str.substr(found.length)];
                 }else{
                     whitespace_fragments = reduce_fragments(found, ' ');
                 }
