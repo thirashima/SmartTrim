@@ -12,7 +12,7 @@ The return value of the function is an array containing the trimmed fragment (if
 **Usage**
 
 ```javascript
-var str = "";
+var str = "Here is a string to trim. yadda yadda yadda.";
 var options = { //these are the same as the defaults already set in the module, and a thus optional
     min: 80,
     max: 200,
