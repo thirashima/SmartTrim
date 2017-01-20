@@ -1,7 +1,7 @@
-var SmartTrim = (function(){
+const SmartTrim = (function(){
     "use strict";
     //options
-    var min = 80,
+    let min = 80,
         max = 200,
         ideal = 100,
         wiggle_room = 20,
@@ -15,7 +15,7 @@ var SmartTrim = (function(){
     }
 
     function reduce_fragments(s, separator){
-        var start = 0,
+        let start = 0,
             str_array = s.split(separator),
             possible_match = str_array[start],
             matched_length = possible_match.length,
@@ -31,7 +31,7 @@ var SmartTrim = (function(){
                 matched_length += (str_array[start].length + 1);
             }
         }
-        for(var x=0;x<=start;x++){
+        for(let x=0;x<=start;x++){
             out.push(str_array[x]);
             if(x != str_array.length-1){
             	out.push(separator);
@@ -59,7 +59,7 @@ var SmartTrim = (function(){
             if(options.optional_delimiters)
                 optional_delimiters = options.optional_delimiters;
 
-            var found = null;
+            let found = null;
 
             //check for whole sentences first
             found = reduce_fragments(str, '.');
@@ -68,11 +68,11 @@ var SmartTrim = (function(){
                 return [found, str.substr(found.length)];
             }else{
                 //next, try delimiters
-                for(var x=0;x<optional_delimiters.length;x++){
-                    var delimiter = optional_delimiters[x];
-                    var re = new RegExp(delimiter);
+                for(let x=0;x<optional_delimiters.length;x++){
+                    let delimiter = optional_delimiters[x];
+                    let re = new RegExp(delimiter);
                     if(re.test(found)){
-                        var frags = reduce_fragments(found, delimiter);
+                        let frags = reduce_fragments(found, delimiter);
                         if(close_to_ideal(frags.length)){
                             found = frags;
                             break;
@@ -83,7 +83,7 @@ var SmartTrim = (function(){
                     return [found, str.substr(found.length)];
                 }else{
                     //if we can't trim on whole sentences or delimited fragments, try whitespace
-                    var whitespace_fragments = reduce_fragments(found, ' ');
+                    let whitespace_fragments = reduce_fragments(found, ' ');
                     if(whitespace_fragments.length < max){
                         return [whitespace_fragments, str.substr(whitespace_fragments.length)];
                     }
