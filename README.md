@@ -1,7 +1,7 @@
 SmartTrim
 =========
 
-A JavaScript module that trims a string to the nearest sensible fragment. 
+A JavaScript module that trims a string to the nearest sensible fragment, that is closest to an "ideal" given length. 
 
 This function prefers looking for whole sentences first (most likely to be coherent). If whole sentances do not match our parameters,
 then it will try sentence fragments, delimited by commas (or any other optional delimiters). If that fails, it fall back to whole words, 

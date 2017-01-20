@@ -1,10 +1,10 @@
 var SmartTrim = (function(){
     "use strict";
+    //options
     var min = 80,
         max = 200,
         ideal = 100,
         wiggle_room = 20,
-        str = '',
         optional_delimiters = [',', ';', ':'];
 
     function close_to_ideal(fragment_length){
@@ -41,9 +41,8 @@ var SmartTrim = (function(){
     }
 
     return {
-        trim: function(original_str, options){
+        trim: function(str, options){
             options = options||{};
-            str = original_str;
             
             if(options.min)
 		        min = options.min;
