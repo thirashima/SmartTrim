@@ -45,13 +45,13 @@ const SmartTrim = (function(){
             options = options||{};
             
             if(options.min)
-		        min = options.min;
+                min = options.min;
 
             if(options.max)
-		        max = options.max;
+                max = options.max;
 
             if(options.ideal)
-		        ideal = options.ideal;
+                ideal = options.ideal;
             
             if(options.wiggle_room)
                 wiggle_room = options.wiggle_room;
