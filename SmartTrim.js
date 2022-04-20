@@ -96,3 +96,5 @@ const SmartTrim = (function(){
         }
     };
 })();
+
+export {SmartTrim};
