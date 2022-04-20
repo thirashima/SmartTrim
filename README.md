@@ -14,10 +14,11 @@ The return value of the function is an array containing the trimmed fragment (if
 ```javascript
 var str = "Here is a string to trim. yadda yadda yadda.";
 var options = { //these are the same as the defaults already set in the module, and a thus optional
-    min: 80,
-    max: 200,
-    ideal: 100,
-    optional_delimiters: [",", ";", ":"]
+    min: 80, //absolute minimum length
+    max: 200, //absolute maximum length
+    ideal: 100, //target length
+    wiggle_room: 20, //how close to ideal we want to get before accepting result
+    optional_delimiters: [",", ";", ":"] //where to split sentences when looking for sensible fragments
 };
 var results = SmartTrim.trim(str, options); 
 ```
